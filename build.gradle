@@ -1,0 +1,148 @@
+plugins {
+    id 'pmd'
+    id 'java'
+    id 'maven'
+    id 'jacoco'
+    id 'checkstyle'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.8.4'
+}
+
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'pmd'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'jacoco'
+apply plugin: 'checkstyle'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+group 'com.github.onotoliy'
+version "$version"
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+}
+
+publishing {
+    repositories {
+        maven {
+            url  = 'https://dl.bintray.com/a-k-pohresniy/algorithm'
+        }
+    }
+
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            groupId = project.group
+            artifactId = project.archivesBaseName
+            version = project.version
+
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+}
+
+bintray {
+    user = 'a-k-pohresniy'
+    key = '61891da6146e09d692266668fcf795d84824afa6'
+    publications = ['MyPublication']
+    publish = true
+    pkg {
+        repo = 'onotoliy'
+        name = 'algorithm'
+        userOrg = 'a-k-pohresniy'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/onotoliy/algorithm.git'
+    }
+    version {
+        name = project.version
+        released = new Date()
+        vcsTag = project.version
+
+        gpg {
+            sign = true
+            passphrase = 'Lenovo14'
+        }
+    }
+}
+
+javadoc {
+    options.encoding = 'UTF-8'
+}
+
+checkstyle {
+    toolVersion '7.8.1'
+    configFile file('checkstyle.xml')
+}
+
+checkstyleMain {
+    source = sourceSets.main.allJava
+}
+
+checkstyleTest {
+    source = sourceSets.main.allJava
+}
+
+pmd {
+    rulePriority 1
+    ruleSetFiles file("pmd.xml")
+}
+
+pmdMain {
+    source = sourceSets.main.allJava
+}
+
+pmdTest {
+    source = sourceSets.main.allJava
+}
+
+jacoco {
+    toolVersion = "0.8.4"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.enabled true
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'INSTRUCTION'
+                value = 'COVEREDRATIO'
+                minimum = 0.9
+            }
+        }
+    }
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+check.dependsOn jacocoTestCoverageVerification
