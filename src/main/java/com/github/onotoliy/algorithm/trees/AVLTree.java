@@ -63,6 +63,7 @@ public class AVLTree<K extends Comparable<K>, V> extends BinaryTree<K, V> {
             .stream()
             .max(Comparator.comparing(Map.Entry::getKey))
             .map(Map.Entry::getValue)
+            .map(this::toAVLNode)
             .ifPresent(this::rotation);
     }
 
@@ -74,7 +75,7 @@ public class AVLTree<K extends Comparable<K>, V> extends BinaryTree<K, V> {
      * @return Поддревья с нарушенным балансом.
      */
     private Map<Integer, Node<K, V>> rotation(final int level,
-                                              final Node<K, V> node) {
+                                              final AVLNode<K, V> node) {
         if (node == null) {
             return Map.of();
         }
@@ -86,8 +87,8 @@ public class AVLTree<K extends Comparable<K>, V> extends BinaryTree<K, V> {
             map.put(level, node);
         }
 
-        map.putAll(rotation(level + 1, node.getLeft()));
-        map.putAll(rotation(level + 1, node.getRight()));
+        map.putAll(rotation(level + 1, toAVLNode(node.getLeft())));
+        map.putAll(rotation(level + 1, toAVLNode(node.getRight())));
 
         return map;
     }
@@ -97,11 +98,11 @@ public class AVLTree<K extends Comparable<K>, V> extends BinaryTree<K, V> {
      *
      * @param node Дерево.
      */
-    private void rotation(final Node<K, V> node) {
+    private void rotation(final AVLNode<K, V> node) {
         if (node.balance() == RIGHT_ROTATION) {
             int rightBalance = node.getRight() == null
                 ? 0
-                : node.getRight().balance();
+                : toAVLNode(node.getRight()).balance();
 
             if (rightBalance < 0) {
                 rightRotation(node.getRight());
@@ -112,7 +113,7 @@ public class AVLTree<K extends Comparable<K>, V> extends BinaryTree<K, V> {
         if (node.balance() == LEFT_ROTATION) {
             int leftBalance = node.getLeft() == null
                 ? 0
-                : node.getLeft().balance();
+                : toAVLNode(node.getLeft()).balance();
 
             if (leftBalance > 0) {
                 leftRotation(node.getLeft());

@@ -43,11 +43,4 @@ public interface Node<K extends Comparable<K>, V> {
      * @return Высота поддерева.
      */
     int height();
-
-    /**
-     * Вычисляет баланс поддерева.
-     *
-     * @return Баланс поддерева.
-     */
-    int balance();
 }

@@ -127,14 +127,6 @@ public class BinaryNode<K extends Comparable<K>, V> implements Node<K, V> {
     }
 
     @Override
-    public int balance() {
-        int rightHeight = getRight() == null ? 0 : getRight().height();
-        int leftHeight = getLeft() == null ? 0 : getLeft().height();
-
-        return rightHeight - leftHeight;
-    }
-
-    @Override
     public String toString() {
         return String.join("\n", prettyTree(0, "b ", this));
     }

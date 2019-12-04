@@ -24,4 +24,15 @@ public class AVLNode<K extends Comparable<K>, V> extends BinaryNode<K, V> {
         super(key, value, left, right);
     }
 
+    /**
+     * Вычисляет баланс поддерева.
+     *
+     * @return Баланс поддерева.
+     */
+    public int balance() {
+        int rightHeight = getRight() == null ? 0 : getRight().height();
+        int leftHeight = getLeft() == null ? 0 : getLeft().height();
+
+        return rightHeight - leftHeight;
+    }
 }
