@@ -54,10 +54,6 @@ public class AVLTree<K extends Comparable<K>, V> extends BinaryTree<K, V> {
      * @param node Дерево.
      */
     private void preRotation(final AVLNode<K, V> node) {
-        if (node == null) {
-            return;
-        }
-
         rotation(0, node)
             .entrySet()
             .stream()
@@ -100,24 +96,18 @@ public class AVLTree<K extends Comparable<K>, V> extends BinaryTree<K, V> {
      */
     private void rotation(final AVLNode<K, V> node) {
         if (node.balance() == RIGHT_ROTATION) {
-            int rightBalance = node.getRight() == null
-                ? 0
-                : toAVLNode(node.getRight()).balance();
-
-            if (rightBalance < 0) {
+            if (toAVLNode(node.getRight()).balance() < 0) {
                 rightRotation(node.getRight());
             }
+
             leftRotation(node);
         }
 
         if (node.balance() == LEFT_ROTATION) {
-            int leftBalance = node.getLeft() == null
-                ? 0
-                : toAVLNode(node.getLeft()).balance();
-
-            if (leftBalance > 0) {
+            if (toAVLNode(node.getLeft()).balance() > 0) {
                 leftRotation(node.getLeft());
             }
+
             rightRotation(node);
         }
     }
